@@ -23,7 +23,7 @@ public class Simulacion
         long aciertos = 0;
         int simulacionesPorHilo = cantidadSimulaciones / cantidadHilos;
         var tareas = new List<Task<long>>();
-        
+
         for (int i = 0; i < cantidadHilos; i++)
         {
             var bolilleroClon = (Bolillero)bolillero.Clone();
@@ -40,7 +40,7 @@ public class Simulacion
         }
 
         Task.WaitAll(tareas.ToArray());
-        
+
         foreach (var tarea in tareas)
         {
             aciertos += tarea.Result;
@@ -48,12 +48,12 @@ public class Simulacion
 
         return aciertos;
     }
-     public static async Task<long> SimularConHilosAsync(Bolillero bolillero, List<int> jugada, int cantidadSimulaciones, int cantidadHilos)
+    public static async Task<long> SimularConHilosAsync(Bolillero bolillero, List<int> jugada, int cantidadSimulaciones, int cantidadHilos)
     {
         long aciertos = 0;
         int simulacionesPorHilo = cantidadSimulaciones / cantidadHilos;
         var tareas = new List<Task<long>>();
-        
+
         for (int i = 0; i < cantidadHilos; i++)
         {
             var bolilleroClon = (Bolillero)bolillero.Clone();
@@ -70,7 +70,7 @@ public class Simulacion
         }
 
         await Task.WhenAll(tareas);
-        
+
         foreach (var tarea in tareas)
         {
             aciertos += tarea.Result;
@@ -78,4 +78,27 @@ public class Simulacion
 
         return aciertos;
     }
+  public static async Task<long> SimularParallelAsync(Bolillero bolillero, List<int> jugada, int cantidadSimulaciones)
+    {
+        long aciertos = 0;
+        object lockObject = new object();
+
+        await Task.Run(() =>
+        {
+            Parallel.For(0, cantidadSimulaciones, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, i =>
+            {
+                var bolilleroClon = (Bolillero)bolillero.Clone();
+                if (bolilleroClon.Jugar(jugada))
+                {
+                    lock (lockObject)
+                    {
+                        aciertos++;
+                    }
+                }
+            });
+        });
+
+        return aciertos;
+    }
+
 } 

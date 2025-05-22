@@ -41,11 +41,20 @@ public class SimulacionTests
         Assert.Equal(bolillero.CantidadBolillasDentro, clon.CantidadBolillasDentro);
         Assert.Equal(bolillero.CantidadBolillasFuera, clon.CantidadBolillasFuera);
     }
-     [Fact]
+    [Fact]
     public async Task SimularConHilosAsync_ConJugadaCorrecta_DevuelveCantidadCorrecta()
     {
         var jugada = new List<int> { 0, 1 };
         long aciertos = await Simulacion.SimularConHilosAsync(bolillero, jugada, 2, 2);
         Assert.Equal(2, aciertos);
     }
-} 
+ [Fact]
+    public async Task SimularParallelAsync_ConJugadaCorrecta_DevuelveCantidadCorrecta()
+    {
+
+        var jugada = new List<int> { 0, 1 };
+        long aciertos = await Simulacion.SimularParallelAsync(bolillero, jugada, 2);
+        Assert.Equal(2, aciertos);
+    }
+}
+
